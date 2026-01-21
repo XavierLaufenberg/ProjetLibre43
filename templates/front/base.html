@@ -5,20 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projet Libre 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" type="text/css" href="./static/style.css">
-    <script defer src="./static/scripts.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
+    <script defer src="../static/scripts.js"></script>
     
 </head>
 <body>
-    <header>
-
+    <header class="bg-yellow-400 font-bold">
+        <section class="flex justify-between items-center">
+        <div class="flex p-5">
+            <a href = ""><img src="../../static/images/pikachu.png" width = "100px"/></a>
+            <h1 class="font-mono text-2xl">Titre projet libre</h1>
+        </div>
+        <nav>
+            <ul class="flex space-x-4 p-5">
+                <li><a href="">Login</a></li>
+                <li><a href="">Signin</a></li>
+            </ul>
+        </nav>
+        </section>
+        <section class="bg-white/50 flex justify-between border-4 border-yellow-400 rounded-full"> 
+            <nav>
+                <ul class ="flex justify-center space-x-10 p-4">
+                    <li><a href="">Section1</a></li>
+                    <li><a href="">Section2</a></li>
+                    <li><a href="">Section3</a></li>
+                    <li><a href="">Section4</a></li>
+                </ul>
+            </nav>
+            <form action="" method = "post" class=" p-4">
+                <input type="text" name="" placeholder="what are you looking for..." class="rounded-full p-2"/>
+                <input type="submit">
+            </form>
+        </section>
     </header>
 
+    <!--
     {% block content %}
-    {% endblock %}
+    {% endblock %}-->
 
-    <footer>
+    <footer class="flex justify-between bg-yellow-400 my-4 font-bold">
+        <section class="p-4">
+            <p>Copyright XavierMM 2026</p>
+        </section>
+        <section class="p-4">
+            <p>Contact</p>
+            <ul>
+                <li>admin</li>
+                <li>email</li>
+                <li>discord</li>
 
+            </ul>
+        </section>
     </footer>
 </body>
 </html>

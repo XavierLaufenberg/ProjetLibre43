@@ -1,0 +1,110 @@
+{% extends 'front/base.html' %}
+
+{% block content %}
+
+<main class="m-10 p-10 border-2 rounded-lg flex items-center justify-center">
+
+
+
+<form 
+  method="POST" 
+  action="{{ url_for('register') }}" 
+  class="bg-white shadow-lg rounded-2xl px-8 pt-6 pb-8 mb-4 w-full max-w-md"
+>
+
+  <h1 class="text-2xl font-bold text-center mb-6">
+    Créer un compte
+  </h1>
+
+
+  <div class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2">
+      Utilisateur
+    </label>
+
+    <input 
+      name="utilisateur"
+      type="text"
+      required
+      placeholder="Nom de l'utilisateur"
+      class="shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+    >
+  </div>
+
+
+  <div class="mb-4">
+    <label class="block text-gray-700 text-sm font-bold mb-2">
+      Mot de passe
+    </label>
+
+    <input 
+      name="mot_de_passe"
+      type="password"
+      id="password"
+      required
+      placeholder="Mot de passe"
+      class="shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+    >
+
+    <ul class="text-sm mt-2">
+      <li id="uppercase" class="text-red-500">Une majuscule</li>
+      <li id="lowercase" class="text-red-500">Une minuscule</li>
+      <li id="number" class="text-red-500">Un chiffre</li>
+    </ul>
+  </div>
+
+
+  <div class="mb-6">
+    <label class="block text-gray-700 text-sm font-bold mb-2">
+      Confirmation mot de passe
+    </label>
+
+    <input 
+      name="verif_mot_de_passe"
+      type="password"
+      required
+      placeholder="Mot de passe"
+      class="shadow border rounded w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+    >
+  </div>
+
+
+  <div class="mb-6">
+
+    <p class="block text-gray-700 text-sm font-bold mb-3">
+      Choisis ton avatar
+    </p>
+
+    <div class="grid grid-cols-4 gap-3">
+
+      {% for avatar in avatars %}
+
+      <label class="cursor-pointer relative">
+        <input type="radio" name="avatar" value="{{ avatar }}" class="hidden peer" required>
+        <img src="{{ avatar }}" class="w-20 h-20 rounded-full border-2 border-gray-300 object-cover peer-checked:border-yellow-400 peer-checked:ring-4 peer-checked:ring-yellow-300 transition" width = 30px>
+      </label>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+  <div class="flex justify-center">
+
+    <button 
+      type="submit"
+      id="submit-btn"
+      disabled
+      class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full transition"
+    >
+      Créer un compte
+    </button>
+
+  </div>
+
+</form>
+
+</main>
+
+{% endblock %}

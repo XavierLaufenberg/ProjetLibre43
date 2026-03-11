@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request, session, url_for
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
 import bcrypt
 import os
 
@@ -13,6 +14,7 @@ MONGO_URI = os.getenv('MONGO_URI')
 
 client = MongoClient(MONGO_URI)
 db = client.get_database("pikApp")
+app.secret_key = os.urandom(24)
 
 @app.route('/')
 def index():
@@ -33,12 +35,13 @@ def pokemons():
 
 @app.route('/dresseurs')
 def all_dresseurs():
+    dresseur_data = list(db['dresseurs'].finds({}))
     dresseur_data = sorted(
     dresseur_data,
-    key=lambda d: len(d.get("pokemons_attrapes", [])),reverse=True) # Calcul du nombre de pokémons
+    key=lambda d: len(dresseur_data.get("pokemons_attrapes", [])),reverse=True) # Calcul du nombre de pokémons
 
     for dresseur in dresseur_data:
-        dresseur["nb_pokemons"] = len(d.get("pokemons_attrapes", []))
+        dresseur["nb_pokemons"] = len(dresseur_data.get("pokemons_attrapes", []))
 
     return render_template('front/dresseurs.html',dresseurs=dresseur_data)
 
@@ -61,15 +64,18 @@ def register():
     utilisateur = request.form['utilisateur']
     mdp = request.form['mot_de_passe']
     avatar = request.form['avatar']
+    password_hash = bcrypt.hashpw(mdp.encode('utf-8'), bcrypt.gensalt())
 
     user = {
         "pseudo": utilisateur,
-        "password": mdp,   # à hasher plus tard !
+        "password": password_hash,   # à hasher plus tard !
         "avatar": avatar,
         "pokemons_attrapes": []
     }
     db['dresseurs'].insert_one(user)
-    return redirect('/')
+    session['role'] = 'user'
+    session['util'] = utilisateur
+    return redirect(url_for('/'))
 
 
 
@@ -87,14 +93,14 @@ def login():
         return render_template('front/login.html', erreur="Veuillez remplir tous les champs")
 
     db_utils = db.dresseurs
-    util = db_utils.find_one({'nom': utilisateur})
+    util = db_utils.find_one({'pseudo': utilisateur})
 
     if not util:
         return render_template('front/login.html', erreur="Le nom d'utilisateur n'existe pas")
 
     # Vérification du mot de passe (hashé avec bcrypt)
-    if bcrypt.checkpw(mot_de_passe.encode('utf-8'), util['mdp']):
-        # Création de la session
+    if bcrypt.checkpw(mot_de_passe.encode('utf-8'), util['password']):
+        # Création de la session, on créer les cookies pour une session
         session['role'] = util.get('role', 'user')
         session['util'] = utilisateur
         return redirect(url_for("index"))
@@ -102,6 +108,40 @@ def login():
         return render_template('front/login.html', erreur="Le mot de passe est incorrect")
 
 
+
+###Ajout pokemon 
+#Affihcage du templates
+@app.route("/pokemon/add")
+def add_pokemon():
+    return render_template("front/new_pokemon.html")
+
+#Création du post, du pokemon
+@app.route("/pokemon/create", methods = ['POST'])
+def create_pokemon(): 
+    nom = request.form['nom']
+    description = request.form['description']
+    type_pokemon = request.form['type']
+
+    image = request.files["image"]
+
+    if image:
+        nom_fichier = secure_filename(image.filename)
+        upload_path = os.path.join(app.static_folder, "images/pokemon_user", nom_fichier)
+        image.save(upload_path)
+
+        image_path = f'/static/images/pokemon_user/{nom_fichier}'
+
+    else: 
+        image_path = ""    
+
+    pokemon = { 
+        "nom": nom,
+        "image" : image_path,
+        "description" : description,
+        "type" : type_pokemon
+    }
+    db['pokemons'].insert_one(pokemon)
+    return redirect(url_for("/front/pokemons"))
 
 app.run(host='0.0.0.0', port=81)
 

@@ -4,7 +4,7 @@
 <main class = "m-10 p-10 border-2 round-lg">
  <section>
   <h1 class = "flex justify-center text-3xl font-bold">Dernier pokemon attrapés</h1>
-  <div class="grid grid-cols-4">
+  <div class="grid grid-cols-4 space-5">
  {% for pokemon in pokemons[:8] %}   
  <div class="w-64 aspect-[2.5/3.5] bg-yellow-100 rounded-2xl border-4 border-yellow-400 shadow-xl p-3 flex flex-col">
   <h2 class="text-lg font-bold text-gray-800 mb-2">{{pokemon.nom}}

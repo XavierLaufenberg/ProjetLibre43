@@ -1,0 +1,59 @@
+{% extends 'admin/back_base.html' %}
+
+{% block content %}
+
+<main class="m-10 p-10 border-2 rounded-lg">
+
+  <!-- Titre -->
+  <h1 class="flex justify-center text-3xl font-bold mb-10">
+    Tous les Dresseurs
+  </h1>
+
+  <!-- Grille des dresseurs -->
+  <section class="flex flex-wrap justify-center gap-8">
+    <table class=" ">
+        <thead>
+            <th>Pseudo</th>
+            <th>Roles</th>
+            <th>nombre de posts</th>
+        </thead>
+        <tbody>
+            {% for dresseur in dresseurs %}
+            <tr>
+                <td>{{dresseur['pseudo']}}</td>
+                <td>{{dresseur['role']}}</td>
+                <td><a href="/">Voir</a></td>
+                <td><a href="/">Modifier</a></td>
+                <td><a href="/">Supprimer</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+  </section>
+
+    <!-- Grille des posts-->
+  <section class="flex flex-wrap justify-center gap-8">
+    <table class=" ">
+        <thead>
+            <th>Nom</th>
+            <th>type</th>
+        </thead>
+        <tbody>
+            {% for pokemon in pokemons %}
+            <tr>
+                <td>{{pokemon['nom']}}</td>
+                <td>{{pokemon['type']}}</td>
+                <td><a href="/">Voir</a></td>
+                <td><a href="/">Modifier</a></td>
+                <td><a href="/">Supprimer</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+  </section>
+
+</main>
+
+{% endblock %}

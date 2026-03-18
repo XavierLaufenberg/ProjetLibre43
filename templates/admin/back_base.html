@@ -10,41 +10,24 @@
     
 </head>
 <body>
-    <header class="bg-yellow-400 font-bold">
+    <header class="bg-red-400 font-bold">
         <section class="flex justify-between items-center">
         <div class="flex pt-2 items-center">
             <a href = "/"><img src="../../static/images/pokeball.png" width = "100px"/></a>
             <h1 class="font-mono text-2xl">Pik'App</h1>
         </div>
-        <nav>
-            <ul class="flex space-x-4 p-4">
-            {%if session['util'] %}
-               <li><a href="/logout">Logout</a></li>
-            {% else %} 
-                <li><a href="/login">Login</a></li>
-                <li><a href="/signup">Signin</a></li>
-            {% endif %}    
-            </ul>
-            
-
-        </nav>
+        <h2>Bonjour {{user}}, vous êtres connecter en tant qu'admin</h2>
         </section>
-        <section class="bg-white/50 flex justify-between border-4 border-yellow-400 rounded-full items-center"> 
+        <section class="bg-white/50 flex justify-between border-4 border-red-400 rounded-full items-center"> 
             <nav>
                 <ul class ="flex justify-center space-x-10 p-4">
                     <li><a href="/pokemons">Pokemons</a></li>
                     <li><a href="/dresseurs">Dresseurs</a></li>
-                    <li><a href="/attraper">Attraper</a></li>
-                    <li><a href="/pokemon/add">Ajouter un Pokémon</a></li>
                 </ul>
             </nav>
-            <form action="" method = "post" class=" p-4">
-                <input type="text" name="" placeholder="que cherches-tu ? " class="rounded-full p-2"/>
-                <input type="submit">
-            </form>
         </section>
     </header>
-    {% if erreur %}
+     {% if erreur %}
     <h3>{{erreur}}</h3>
     {% endif %}
 
@@ -52,7 +35,7 @@
     {% block content %}
     {% endblock %}
 
-    <footer class="flex justify-between bg-yellow-400 my-4 font-bold">
+    <footer class="flex justify-between bg-red-400 my-4 font-bold">
         <section class="p-4">
             <p>Copyright XavierMM 2026</p>
         </section>

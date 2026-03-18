@@ -46,36 +46,33 @@ def all_dresseurs():
     return render_template('front/dresseurs.html',dresseurs=dresseur_data)
 
 
+
+#####GESTION UTILISATEURS######
 @app.route('/signup')
 def signup():
-
     avatar_dir = os.path.join(app.static_folder, "images/avatar")
-
     avatars = os.listdir(avatar_dir)
-
     avatar_paths = [f"/static/images/avatar/{a}" for a in avatars]
-
     return render_template("front/signup.html",avatars=avatar_paths)
 
 
 @app.route('/register', methods=['POST'])
 def register():
-
     utilisateur = request.form['utilisateur']
     mdp = request.form['mot_de_passe']
     avatar = request.form['avatar']
     password_hash = bcrypt.hashpw(mdp.encode('utf-8'), bcrypt.gensalt())
-
     user = {
         "pseudo": utilisateur,
         "password": password_hash,   # à hasher plus tard !
         "avatar": avatar,
+        "role" : "user",
         "pokemons_attrapes": []
     }
     db['dresseurs'].insert_one(user)
     session['role'] = 'user'
     session['util'] = utilisateur
-    return redirect(url_for('/'))
+    return redirect(url_for('index'))
 
 
 
@@ -108,9 +105,15 @@ def login():
         return render_template('front/login.html', erreur="Le mot de passe est incorrect")
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
 
 ###Ajout pokemon 
-#Affihcage du templates
+#Affichage du templates
 @app.route("/pokemon/add")
 def add_pokemon():
     return render_template("front/new_pokemon.html")
@@ -143,5 +146,15 @@ def create_pokemon():
     db['pokemons'].insert_one(pokemon)
     return redirect(url_for("/front/pokemons"))
 
-app.run(host='0.0.0.0', port=81)
 
+#### ADMIN ####
+@app.route('/admin')
+def admin(): 
+    pokemon_data = list(db['pokemons'].find({}))
+    dresseur_data = list(db['dresseurs'].find({}))
+    if 'util' in session and session['role'] == 'admin':
+        return render_template('admin/back_accueil.html', pokemons = pokemon_data, dresseurs = dresseur_data)
+    else: 
+        return render_template('index.html', erreur = "vous n'avez pas les droits d'accès",  pokemons = pokemon_data, dresseurs = dresseur_data)
+
+app.run(host='0.0.0.0', port=81)

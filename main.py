@@ -98,7 +98,7 @@ def login():
     # Vérification du mot de passe (hashé avec bcrypt)
     if bcrypt.checkpw(mot_de_passe.encode('utf-8'), util['password']):
         # Création de la session, on créer les cookies pour une session
-        session['role'] = util.get('role', 'user')
+        session['role'] = util['role']
         session['util'] = utilisateur
         return redirect(url_for("index"))
     else:
@@ -109,6 +109,7 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
 
 
 

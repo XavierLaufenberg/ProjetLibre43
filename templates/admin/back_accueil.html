@@ -14,17 +14,25 @@
     <table class=" ">
         <thead>
             <th>Pseudo</th>
-            <th>Roles</th>
+            <th>Role</th>
             <th>nombre de posts</th>
         </thead>
         <tbody>
             {% for dresseur in dresseurs %}
             <tr>
                 <td>{{dresseur['pseudo']}}</td>
-                <td>{{dresseur['role']}}</td>
-                <td><a href="/">Voir</a></td>
-                <td><a href="/">Modifier</a></td>
-                <td><a href="/">Supprimer</a></td>
+                <td>
+                <form action="{{ url_for('update_role', user_id=dresseur['_id'])}}" method="POST">
+                    <select name="role" onchange="this.form.submit()">
+                        <option value = "user" {% if dresseur['role'] == 'user' %} selected {% endif %}>user</option>
+                        <option value = "admin" {% if dresseur['role'] == 'admin' %} selected {% endif %}>admin</option>
+                    </select>        
+                </form>
+                </td>
+                <td><a href="{{ url_for('show_user', user_id=dresseur['_id'])}}">Voir</a></td>
+                <td>
+                    <a href="{{ url_for('delete_user', user_id=dresseur['_id'])}}" onclick="return confirm('Supprimer ce dresseur ?')">Supprimer</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

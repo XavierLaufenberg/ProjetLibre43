@@ -1,0 +1,13 @@
+{% extends 'admin/back_base.html' %}
+
+{% block content%}
+
+<h1>Profile de {{ user['pseudo'] }}</h1>
+<img src="{{ user['avatar']}}" width = "100">
+<p>Post :  {{ user[pokemon]|length }}</p>
+
+<a href="{{ url_for('admin')}}">Retour</a>
+
+
+{% endblock %}
+

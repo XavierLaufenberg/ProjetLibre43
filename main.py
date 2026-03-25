@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 import bcrypt
 import os
+from bson.objectid import ObjectId
 
 #charger les variables d'environnement
 load_dotenv()
@@ -35,7 +36,7 @@ def pokemons():
 
 @app.route('/dresseurs')
 def all_dresseurs():
-    dresseur_data = list(db['dresseurs'].finds({}))
+    dresseur_data = list(db['dresseurs'].find({}))
     dresseur_data = sorted(
     dresseur_data,
     key=lambda d: len(dresseur_data.get("pokemons_attrapes", [])),reverse=True) # Calcul du nombre de pokémons
@@ -157,5 +158,43 @@ def admin():
         return render_template('admin/back_accueil.html', pokemons = pokemon_data, dresseurs = dresseur_data)
     else: 
         return render_template('index.html', erreur = "vous n'avez pas les droits d'accès",  pokemons = pokemon_data, dresseurs = dresseur_data)
+
+
+@app.route('/admin/update_role/<user_id>', methods= ['POST'])
+def update_role(user_id):
+    if 'util' in session and session['role'] == 'admin':
+        new_role = request.form.get('role')
+
+        db['dresseurs'].update_one(
+            {"_id" : ObjectId(user_id)},
+            {"$set" : {"role": new_role}}
+        )
+    return redirect(url_for('admin'))   
+
+@app.route("/admin/delete_user/<user_id>")
+def delete_user(user_id):
+    if 'util' in session and session['role'] == 'admin':
+        db['dresseurs'].delete_one({"_id" : ObjectId(user_id)})
+    return redirect(url_for('admin')) 
+
+
+@app.route('/admin/user/<user_id>')
+def show_user(user_id):
+    if 'util' in session and session['role'] == 'admin':
+        user = db['dresseurs'].find_one({"_id" : ObjectId(user_id)})
+
+        if not user:
+            return redirect(url_for('admin'))
+        
+        return render_template('admin/back_user.html', user=user)
+    
+    return redirect(url_for('index')) 
+
+
+
+
+
+
+
 
 app.run(host='0.0.0.0', port=81)

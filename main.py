@@ -32,7 +32,7 @@ def index():
 @app.route('/pokemons')
 def pokemons():
     pokemon_data = list(db['pokemons'].find({}))
-    return render_template('front/all_pokemons.html',pokemons=pokemon_data)
+    return render_template('front/pokemons.html',pokemons=pokemon_data)
 
 @app.route('/dresseurs')
 def all_dresseurs():
@@ -110,8 +110,6 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("index"))
-
-
 
 
 ###Ajout pokemon 

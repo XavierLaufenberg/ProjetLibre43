@@ -10,12 +10,31 @@ from bson.objectid import ObjectId
 load_dotenv()
 
 app = Flask("Pikapp")
-
 MONGO_URI = os.getenv('MONGO_URI')
 
 client = MongoClient(MONGO_URI)
 db = client.get_database("pikApp")
 app.secret_key = os.urandom(24)
+
+TAGS = ["rare", "shiny", "amical", "agressif", "paresseux", "hyperactif"]
+
+#mise à jour globale 
+result = db["pokemons"].update_many(
+    { "$or": [
+        {"tags" : {"$exists" : False}},
+        {"like" : {"$exists" : False}},
+        {"liked_by" : {"$exists" : False}}
+    ]},
+    {
+        "$set": {
+            "tags" : [],
+            "likes" : 0,
+            "liked_by" :[] 
+        }
+    }
+    )
+
+print("database uploaded")
 
 @app.route('/')
 def index():
@@ -29,10 +48,16 @@ def index():
 
     return render_template( "index.html",pokemons=pokemon_data,dresseurs=dresseur_data)
 
-@app.route('/pokemons')
-def pokemons():
-    pokemon_data = list(db['pokemons'].find({}))
-    return render_template('front/pokemons.html',pokemons=pokemon_data)
+####
+@app.route("/pokemon/<pokemon_id>")
+def show_pokemon(pokemon_id):
+    pokemon = db['pokemons'].find_one({"_id": ObjectId(pokemon_id)})
+
+    if not pokemon:
+        return redirect(url_for("pokemons"))
+
+    return render_template( "front/pokemon.html", pokemon=pokemon)
+#####
 
 @app.route('/dresseurs')
 def all_dresseurs():
@@ -68,7 +93,7 @@ def register():
         "password": password_hash,   # à hasher plus tard !
         "avatar": avatar,
         "role" : "user",
-        "pokemons_attrapes": []
+        "pokemons_attrapes": [],
     }
     db['dresseurs'].insert_one(user)
     session['role'] = 'user'
@@ -112,11 +137,11 @@ def logout():
     return redirect(url_for("index"))
 
 
-###Ajout pokemon 
+###Gestion pokemon 
 #Affichage du templates
 @app.route("/pokemon/add")
 def add_pokemon():
-    return render_template("front/new_pokemon.html")
+    return render_template("front/new_pokemon.html", tags = TAGS)
 
 #Création du post, du pokemon
 @app.route("/pokemon/create", methods = ['POST'])
@@ -124,8 +149,8 @@ def create_pokemon():
     nom = request.form['nom']
     description = request.form['description']
     type_pokemon = request.form['type']
-
     image = request.files["image"]
+    tags = request.form.getlist("tags")
 
     if image:
         nom_fichier = secure_filename(image.filename)
@@ -141,10 +166,40 @@ def create_pokemon():
         "nom": nom,
         "image" : image_path,
         "description" : description,
-        "type" : type_pokemon
+        "type" : type_pokemon,
+        "tag" : tags,
+        "likes": 0,
+        "liked_by": [] 
     }
     db['pokemons'].insert_one(pokemon)
-    return redirect(url_for("/front/pokemons"))
+    return redirect(url_for("pokemons"))
+
+#Like
+@app.route("/pokemon/like/<pokemon_id>")
+def like_pokemon(pokemon_id):
+    if 'util' not in session:
+        return redirect(url_for('login'))
+    
+    user = session['util']
+
+    pokemon = db['pokemons'].find_one({"_id": ObjectId(pokemon_id)})
+
+    if not pokemon: 
+        return redirect(url_for("pokemons"))
+    
+    if user in pokemon.get("liked_by", []):
+        return redirect(url_for('show_pokemon', pokemon_id=pokemon_id))
+    
+    db['pokemons'].update_one(
+        {"_id": ObjectId(pokemon_id)},
+        {
+            "$inc": {"likes": 1},
+            "$push": {"liked_by": user}
+        }
+    )
+    return redirect(url_for("pokemons"))
+
+
 
 
 #### ADMIN ####
@@ -187,12 +242,5 @@ def show_user(user_id):
         return render_template('admin/back_user.html', user=user)
     
     return redirect(url_for('index')) 
-
-
-
-
-
-
-
 
 app.run(host='0.0.0.0', port=81)

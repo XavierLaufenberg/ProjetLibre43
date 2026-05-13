@@ -36,6 +36,19 @@
         <textarea name="description" rows="4" required placeholder="décrit ton pokemon"></textarea>
       </div>
 
+      <!--Tags-->
+      <div>
+        <label>Choisis tes tags :</label>
+        <div class="flex flex-wrap gap-2">
+          {% for tag in tags %}
+
+          <input type="checkbox" id="{{ tag }}" name="tags" value="{{ tag }}" class="">
+          <label for="{{ tag }}" class="">{{ tag }}</label>
+
+          {% endfor %}
+        </div>
+      </div>
+
       <!--Bouton-->
       <button type="submit">Crée ton pokemon </button>
 

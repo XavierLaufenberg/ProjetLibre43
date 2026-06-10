@@ -64,10 +64,10 @@ def all_dresseurs():
     dresseur_data = list(db['dresseurs'].find({}))
     dresseur_data = sorted(
     dresseur_data,
-    key=lambda d: len(dresseur_data.get("pokemons_attrapes", [])),reverse=True) # Calcul du nombre de pokémons
+    key=lambda d: len(d.get("pokemons_attrapes", []))) # Calcul du nombre de pokémons
 
     for dresseur in dresseur_data:
-        dresseur["nb_pokemons"] = len(dresseur_data.get("pokemons_attrapes", []))
+        dresseur["nb_pokemons"] = len(dresseur.get("pokemons_attrapes", []))
 
     return render_template('front/dresseurs.html',dresseurs=dresseur_data)
 
@@ -152,6 +152,15 @@ def create_pokemon():
     image = request.files["image"]
     tags = request.form.getlist("tags")
 
+    if len(nom) < 4: 
+        return redirect(url_for("add_pokemon"))
+    
+    if len(description) < 10: 
+        return redirect(url_for("add_pokemon"))
+    
+    if not type_pokemon: 
+        return redirect(url_for("add_pokemon"))
+
     if image:
         nom_fichier = secure_filename(image.filename)
         upload_path = os.path.join(app.static_folder, "images/pokemon_user", nom_fichier)
@@ -172,7 +181,7 @@ def create_pokemon():
         "liked_by": [] 
     }
     db['pokemons'].insert_one(pokemon)
-    return redirect(url_for("pokemons"))
+    return redirect(url_for('index'))
 
 #Like
 @app.route("/pokemon/like/<pokemon_id>")
@@ -243,4 +252,6 @@ def show_user(user_id):
     
     return redirect(url_for('index')) 
 
-app.run(host='0.0.0.0', port=81)
+
+if __name__ == "__main__": 
+    app.run(host="0.0.0.0", port = int(os.environ.get("PORT", 5000)))

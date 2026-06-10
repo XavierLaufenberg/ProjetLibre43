@@ -1,0 +1,11 @@
+/*Validation des champs*/
+.champ-invalide {
+    border: 2px solid rgb(108, 27, 27);
+    outline: none;
+}
+
+.message-erreur {
+    color: rgb(108, 27, 27);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}

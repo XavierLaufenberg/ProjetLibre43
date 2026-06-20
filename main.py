@@ -253,5 +253,16 @@ def show_user(user_id):
     return redirect(url_for('index')) 
 
 
+@app.route('/erreur404')
+def error_404():
+    return render_template("front/erreur_404.html"), 404
+
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('front/erreur_404.html'), 404
+
+
 if __name__ == "__main__": 
     app.run(host="0.0.0.0", port = int(os.environ.get("PORT", 5000)))
